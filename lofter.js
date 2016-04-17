@@ -4,6 +4,7 @@ var casper = require('casper').create({
     }
 });
 var fs = require('fs');
+
 var i=0;
 
 
@@ -24,33 +25,36 @@ casper.then(function() {
     this.click('#loginsubmit');
 });
 
-casper.thenOpen("http://www.lofter.com/tag/狗/new",function(){
-	
-	this.echo("open meitun...");
-	this.capture(++i+'.png');	
+casper.thenOpen("http://www.lofter.com/tag/美臀/new",function(){	
+	this.echo("open link...");
 });
 
-/*casper.wait(3000);
-casper.scrollToBottom();
-casper.wait(3000);
-casper.capture(++i+'.png');	*/
+var count = 15;
+while(count>0){
+	casper.then(function(){
+		this.scrollToBottom();
+		this.wait(10000);
+	});
+	count--;
+}
 
-
-casper.waitWhileSelector('.imgc img',function () {
-	var that = this;
-	
+casper.then(function () {
+	var that = this;	
 	var imgs = this.getElementsAttribute('.imgc img','src');	
 	var content ="";
-	imgs.forEach(function(imgUrl){
-		that.echo(imgUrl);
+	var today = new Date();
+	var todayStr =today.getFullYear()+"-"+today.getMonth()+"-"+today.getDate();
 
-		content += imgUrl+"\r\n";
-/*		that.then(function(){
-			that.download(imgUrl, ++i+'.jpg');
-		});*/
+	imgs.forEach(function(imgUrl){
+		if(imgUrl) {
+			content += imgUrl+"\r\n";
+			that.download(imgUrl, todayStr+'/'+i+'.jpg');
+			i++;
+		};
 	});
-	that.echo(content);
-	fs.write("img-2016-4-14.txt", content, 'w');
+
+	fs.write(todayStr+".txt", content, 'w');
+	this.echo("end...");
     this.capture(++i+'.png');	
 });
 
